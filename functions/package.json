@@ -1,0 +1,20 @@
+{
+  "name": "tocha",
+  "description": "Full-text Search for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase experimental:functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "~6.4.0",
+    "firebase-functions": "^2.1.0",
+    "lunr": "^2.3.5"
+  },
+  "private": true,
+  "engines": {
+    "node": "8"
+  }
+}

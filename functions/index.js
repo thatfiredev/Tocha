@@ -7,6 +7,7 @@ firestore.settings({timestampsInSnapshots: true});
 
 const lunr = require('lunr');
 
+// Full Text-Search on Cloud Firestore
 exports.searchFirestore = functions.firestore
     .document('tocha_searches/{searchId}')
     .onCreate(async (snap, context) => {
@@ -50,4 +51,53 @@ exports.searchFirestore = functions.firestore
                 response: response,
                 responseTimestamp: admin.firestore.FieldValue.serverTimestamp()
             });
+    });
+
+// Full Text-Search on the Realtime Database
+exports.searchRTDB = functions.database
+    .ref('tocha_searches/{searchId}')
+    .onCreate((snap, context) => {
+        // Obtain the request parameters
+        const req = snap.val();
+        const nodeName = req.collectionName;
+        const fields = req.fields;
+        const query = req.query;
+        const queryRef = req.queryRef;
+
+        // Read everything from the node to be searched
+        const database = admin.database();
+        return database.ref(nodeName)
+            .once("value", function(dataSnapshot) {
+                var documents = [];
+                var lunrIndex = lunr(function() {
+                    if (queryRef) {
+                        this.ref(queryRef);
+                    } else {
+                        this.ref('key');
+                    }
+                    for (var i in fields) {
+                        this.field(fields[i]);
+                    }
+                    dataSnapshot.forEach(function (snapshot) {
+                        var snapshotVal = snapshot.val();
+                        documents[snapshot.id] = snapshot.val();
+                        snapshotVal.key = snapshot.id;
+                        this.add(snapshotVal);
+                    }, this);
+                });
+                const results = lunrIndex.search(query);
+                var response = [];
+                results.forEach(function(result) {
+                    response.push({
+                        id: result.ref,
+                        score: result.score,
+                        data: documents[result.ref]
+                    })
+                });
+                return database.ref("tocha_searches").child(context.params.searchId)
+                    .update({
+                        response: response,
+                        responseTimestamp: admin.database.ServerValue.TIMESTAMP
+                    });
+            })
     });

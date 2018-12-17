@@ -2,6 +2,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+const firestore = admin.firestore();
+firestore.settings({timestampsInSnapshots: true});
+
 const lunr = require('lunr');
 
 exports.searchFirestore = functions.firestore
@@ -14,8 +17,8 @@ exports.searchFirestore = functions.firestore
         const query = req.query;
         const queryRef = req.queryRef;
 
-        // Read all the documents form the collection to be searched
-        const querySnapshot = await admin.firestore().collection(collectionName).get();
+        // Read all the documents from the collection to be searched
+        const querySnapshot = await firestore.collection(collectionName).get();
         var documents = [];
         var lunrIndex = lunr(function() {
             if (queryRef) {
@@ -42,7 +45,7 @@ exports.searchFirestore = functions.firestore
                 data: documents[result.ref]
             })
         });
-        return admin.firestore().collection("tocha_searches").doc(context.params.searchId)
+        return firestore.collection("tocha_searches").doc(context.params.searchId)
             .update({
                 response: response,
                 responseTimestamp: admin.firestore.FieldValue.serverTimestamp()

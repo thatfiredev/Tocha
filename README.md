@@ -1,5 +1,5 @@
 # Tocha
-Full-Text Search for Cloud Firestore through Cloud Functions, even if you're on the
+Full-Text Search for Firebase through Cloud Functions, even if you're on the
  [Spark Plan](https://firebase.google.com/pricing/) (no billing enabled). 😉
 
 ## Getting Started

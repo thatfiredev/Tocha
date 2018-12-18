@@ -6,10 +6,11 @@ const firestore = admin.firestore();
 firestore.settings({timestampsInSnapshots: true});
 
 const lunr = require('lunr');
+const tochaCollection = 'tocha_searches';
 
 // Full Text-Search on Cloud Firestore
 exports.searchFirestore = functions.firestore
-    .document('tocha_searches/{searchId}')
+    .document(tochaCollection + '/{searchId}')
     .onCreate(async (snap, context) => {
         // Obtain the request parameters
         const req = snap.data();
@@ -46,7 +47,7 @@ exports.searchFirestore = functions.firestore
                 data: documents[result.ref]
             })
         });
-        return firestore.collection("tocha_searches").doc(context.params.searchId)
+        return firestore.collection(tochaCollection).doc(context.params.searchId)
             .update({
                 response: response,
                 responseTimestamp: admin.firestore.FieldValue.serverTimestamp()
@@ -55,7 +56,7 @@ exports.searchFirestore = functions.firestore
 
 // Full Text-Search on the Realtime Database
 exports.searchRTDB = functions.database
-    .ref('tocha_searches/{searchId}')
+    .ref(tochaCollection + '/{searchId}')
     .onCreate((snap, context) => {
         // Obtain the request parameters
         const req = snap.val();
@@ -67,7 +68,7 @@ exports.searchRTDB = functions.database
         // Read everything from the node to be searched
         const database = admin.database();
         return database.ref(nodeName)
-            .once("value", function(dataSnapshot) {
+            .once('value', function(dataSnapshot) {
                 var documents = new Map();
                 dataSnapshot.forEach(function (snapshot) {
                     var snapshotVal = snapshot.val();
@@ -90,7 +91,7 @@ exports.searchRTDB = functions.database
                         data: documents.get(result.ref)
                     });
                 });
-                database.ref("tocha_searches").child(context.params.searchId)
+                database.ref(tochaCollection).child(context.params.searchId)
                     .update({
                         response: response,
                         responseTimestamp: admin.database.ServerValue.TIMESTAMP

@@ -68,33 +68,29 @@ exports.searchRTDB = functions.database
         const database = admin.database();
         return database.ref(nodeName)
             .once("value", function(dataSnapshot) {
-                var documents = [];
-                var lunrIndex = lunr(function() {
-                    if (queryRef) {
-                        this.ref(queryRef);
-                    } else {
-                        this.ref('key');
-                    }
-                    for (var i in fields) {
-                        this.field(fields[i]);
-                    }
-                    dataSnapshot.forEach(function (snapshot) {
-                        var snapshotVal = snapshot.val();
-                        documents[snapshot.id] = snapshot.val();
-                        snapshotVal.key = snapshot.id;
-                        this.add(snapshotVal);
-                    }, this);
+                var documents = new Map();
+                dataSnapshot.forEach(function (snapshot) {
+                    var snapshotVal = snapshot.val();
+                    snapshotVal.key = snapshot.key;
+                    documents.set(snapshot.key, snapshotVal);
+                });
+                var lunrIndex = lunr(function () {
+                    if (queryRef) { this.ref(queryRef); } else { this.ref('key'); }
+
+                    for (var i in fields) { this.field(fields[i]); }
+
+                    documents.forEach(function (value) { this.add(value); }, this);
                 });
                 const results = lunrIndex.search(query);
-                var response = [];
-                results.forEach(function(result) {
+                const response = [];
+                results.forEach(function (result) {
                     response.push({
                         id: result.ref,
                         score: result.score,
-                        data: documents[result.ref]
-                    })
+                        data: documents.get(result.ref)
+                    });
                 });
-                return database.ref("tocha_searches").child(context.params.searchId)
+                database.ref("tocha_searches").child(context.params.searchId)
                     .update({
                         response: response,
                         responseTimestamp: admin.database.ServerValue.TIMESTAMP

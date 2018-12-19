@@ -75,11 +75,11 @@ Let's say we have a Firestore Collection named "notes" with the following Docume
 }
 ```
 
-### Performing a simple Search
+### Performing a Simple Search
 In order to search the collection, you'll need to create a new collection named "tocha_searches" and add a new document
  to it. This document should contain the following fields:
- - `collectionName` - the name of the collection you want to search;
- - `fields` - array of fields where you want to search.
+ - `collectionName` - the name of the collection to be searched;
+ - `fields` - array of fields to search on.
  - `query` - the word/expression you're looking for.
 
 **Example 1:** Let's run an exact search for notes with the word "butter". Our document would look like this:
@@ -133,7 +133,7 @@ So our document from Example 1 would become:
 
 ### Advanced Search on Cloud Firestore
 Although running a text-search in the whole collection is great, sometimes you may need to filter this collection before
- running the search. And to do that, you can use the optional parameters:
+ running the search. And to do that, you can use these optional parameters:
  
 #### `where`
 An array of map values where you can perform simple or compound queries for firestore. Each map in this array must

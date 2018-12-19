@@ -18,9 +18,30 @@ exports.searchFirestore = functions.firestore
         const fields = req.fields;
         const query = req.query;
         const queryRef = req.queryRef;
+        const where = req.where; // array containing all the extra queries
+        const orderBy = req.orderBy; // object containing field and direction
+        const limit = req.limit;
+
+        // Construct the query to the collection being searched
+        var userCollection = firestore.collection(collectionName);
+        if (where) {
+            where.forEach(function(subquery) {
+                userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
+            });
+        }
+        if (orderBy) {
+            if (orderBy.direction) {
+                userCollection = userCollection.orderBy(orderBy.field, orderBy.direction);
+            } else {
+                userCollection = userCollection.orderBy(orderBy.field);
+            }
+        }
+        if (limit) {
+            userCollection = userCollection.limit(limit);
+        }
 
         // Read all the documents from the collection to be searched
-        const querySnapshot = await firestore.collection(collectionName).get();
+        const querySnapshot = await userCollection.get();
         var documents = [];
         var lunrIndex = lunr(function() {
             if (queryRef) {

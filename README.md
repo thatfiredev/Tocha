@@ -145,7 +145,7 @@ An array of map values where you can perform simple or compound queries for fire
 **Example:** Suppose our notes had one more field named `ownerUID`, which tells us which user created the note.
 
 We might want to query only on the notes created by a specific user (`uid: randomUserUID`). To do that, we can use:
-```json
+```json5
 {
   // ... Other Fields (collectionName, fields, query, etc)
   "where": [
@@ -174,7 +174,7 @@ The `orderBy` field allows you to order the result of your query. This field is 
 The `limit` field allows you to limit the number of documents retrieved. This value of this field must be a number.
 
 **Example:** Let's order our notes by `title` and get the first 5:
-```json
+```json5
 {
   // ... Other Fields (collectionName, fields, query, etc)
   "orderBy": [

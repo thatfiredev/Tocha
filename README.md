@@ -66,7 +66,7 @@ Let's say we have a Firestore Collection named "notes" with the following Docume
 {
   "note1": {
     "title": "Remember to buy butter",
-    "description": "Valeria asked ne to get some butter at the supermarket on my way home."
+    "description": "Valeria asked me to get some butter at the supermarket on my way home."
   },
   "note2": {
     "title": "Eta's birthday coming up",
@@ -75,11 +75,11 @@ Let's say we have a Firestore Collection named "notes" with the following Docume
 }
 ```
 
-### Performing the Search
+### Performing a simple Search
 In order to search the collection, you'll need to create a new collection named "tocha_searches" and add a new document
  to it. This document should contain the following fields:
  - `collectionName` - the name of the collection you want to search;
- - `fields` - fields where you want to search.
+ - `fields` - array of fields where you want to search.
  - `query` - the word/expression you're looking for.
 
 **Example 1:** Let's run an exact search for notes with the word "butter". Our document would look like this:
@@ -124,12 +124,70 @@ So our document from Example 1 would become:
       "score": 0.856,
       "data": {
         "title": "Remember to buy butter",
-        "description": "Valeria asked ne to get some butter at the supermarket on my way home."      
+        "description": "Valeria asked me to get some butter at the supermarket on my way home."
       }
     }
   ]
 }
 ```
+
+### Advanced Search on Cloud Firestore
+Although running a text-search in the whole collection is great, sometimes you may need to filter this collection before
+ running the search. And to do that, you can use the optional parameters:
+ 
+#### `where`
+An array of map values where you can perform simple or compound queries for firestore. Each map in this array must
+ contain the following fields:
+ - `field` - the field to filter on.
+ - `operator` - a comparison operator. This can be `<`, `<=`, `==`, `>`, `>=`, or `array_contains`.
+ - `val` - the value.
+ 
+**Example:** Suppose our notes had one more field named `ownerUID`, which tells us which user created the note.
+
+We might want to query only on the notes created by a specific user (`uid: randomUserUID`). To do that, we can use:
+```json
+{
+  // ... Other Fields (collectionName, fields, query, etc)
+  "where": [
+    {
+      "field": "ownerUID",
+      "operator": "==",
+      "val": "randomUserUID"
+    }
+    // Optionally, you can add more filter maps here.
+  ]
+}
+```
+
+See a full list of valid filters and query limitations on the
+ [Firebase Documentation](https://firebase.google.com/docs/firestore/query-data/queries).
+
+#### `orderBy` and `limit`
+The `orderBy` field allows you to order the result of your query. This field is an array of map objects with 2 fields:
+ - `field` - the field to sort on.
+ - `direction` (optional) - `asc` for ascending order or `desc` for descending. If you omit this field, it will use
+ ascending order.
+
+**Note:** If you want to order by multiple fields you might need to
+ [Create an Index on Firestore](https://firebase.google.com/docs/firestore/query-data/indexing).
+ 
+The `limit` field allows you to limit the number of documents retrieved. This value of this field must be a number.
+
+**Example:** Let's order our notes by `title` and get the first 5:
+```json
+{
+  // ... Other Fields (collectionName, fields, query, etc)
+  "orderBy": [
+    {
+      "field": "title",
+      "direction": "desc"
+    }
+    // Optionally, you can add more orderBy maps here.
+  ],
+  "limit": 5
+}
+```
+
 
 ## Contributing
 

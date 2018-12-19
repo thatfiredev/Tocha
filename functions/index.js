@@ -30,11 +30,13 @@ exports.searchFirestore = functions.firestore
             });
         }
         if (orderBy) {
-            if (orderBy.direction) {
-                userCollection = userCollection.orderBy(orderBy.field, orderBy.direction);
-            } else {
-                userCollection = userCollection.orderBy(orderBy.field);
-            }
+            orderBy.forEach(function (sortOrder) {
+                if (sortOrder.direction) {
+                    userCollection = userCollection.orderBy(sortOrder.field, sortOrder.direction);
+                } else {
+                    userCollection = userCollection.orderBy(sortOrder.field);
+                }
+            });
         }
         if (limit) {
             userCollection = userCollection.limit(limit);

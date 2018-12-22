@@ -87,10 +87,54 @@ exports.searchRTDB = functions.database
         const fields = req.fields;
         const query = req.query;
         const queryRef = req.queryRef;
+        const orderByChild = req.orderChild;
+        const orderByKey = req.orderKey;
+        const orderByValue = req.orderValue;
+        const limitToFirst = req.limitFirst;
+        const limitToLast = req.limitLast;
+        const startAt = req.startAtBound;
+        const endAt = req.endAtBound;
+        const equalTo = req.equalToBound;
+
+        // Construct the query
+        const database = admin.database();
+        var databaseRef = database.ref(nodeName);
+        if (orderByChild) {
+            databaseRef = databaseRef.orderByChild(orderByChild);
+        } else {
+            if (orderByValue) {
+                databaseRef = databaseRef.orderByValue();
+            } else {
+                if (orderByKey) {
+                    databaseRef = databaseRef.orderByKey();
+                }
+            }
+        }
+
+        if (limitToFirst) {
+            databaseRef = databaseRef.limitToFirst(limitToFirst);
+        } else {
+            if (limitToLast) {
+                databaseRef = databaseRef.limitToLast(limitToLast);
+            }
+        }
+
+        if (startAt) {
+            databaseRef = databaseRef.startAt(startAt);
+        }
+
+        if (endAt) {
+            databaseRef = databaseRef.endAt(endAt);
+        }
+
+        if (equalTo) {
+            databaseRef = databaseRef.equalTo(equalTo);
+        }
+
 
         // Read everything from the node to be searched
-        const database = admin.database();
-        return database.ref(nodeName)
+
+        return databaseRef
             .once('value', function(dataSnapshot) {
                 var documents = new Map();
                 dataSnapshot.forEach(function (snapshot) {

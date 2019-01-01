@@ -93,43 +93,63 @@ exports.searchFirestore = functions.firestore
 exports.searchRTDB = functions.database
     .ref(tochaCollection + '/{searchId}')
     .onCreate((snap, context) => {
-        // Obtain the request parameters
-        const req = snap.val();
-        const nodeName = req.collectionName;
-        const fields = req.fields;
-        const query = req.query;
-        const queryRef = req.queryRef;
-
-        // Read everything from the node to be searched
+        const responseResults = [];
+        var response = {
+            result: responseResults
+        };
         const database = admin.database();
-        return database.ref(nodeName)
-            .once('value', function(dataSnapshot) {
-                var documents = new Map();
-                dataSnapshot.forEach(function (snapshot) {
-                    var snapshotVal = snapshot.val();
-                    snapshotVal.key = snapshot.key;
-                    documents.set(snapshot.key, snapshotVal);
-                });
-                var lunrIndex = lunr(function () {
-                    if (queryRef) { this.ref(queryRef); } else { this.ref('key'); }
+        try {
+            // Obtain the request parameters
+            const req = snap.val();
+            const nodeName = req.collectionName;
+            const fields = req.fields;
+            const query = req.query;
+            const queryRef = req.queryRef;
 
-                    for (var i in fields) { this.field(fields[i]); }
+            // Read everything from the node to be searched
+            return database.ref(nodeName)
+                .once('value', function(dataSnapshot) {
+                    try {
+                        var documents = new Map();
+                        dataSnapshot.forEach(function (snapshot) {
+                            var snapshotVal = snapshot.val();
+                            snapshotVal.key = snapshot.key;
+                            documents.set(snapshot.key, snapshotVal);
+                        });
+                        var lunrIndex = lunr(function () {
+                            if (queryRef) { this.ref(queryRef); } else { this.ref('key'); }
 
-                    documents.forEach(function (value) { this.add(value); }, this);
+                            for (var i in fields) { this.field(fields[i]); }
+
+                            documents.forEach(function (value) { this.add(value); }, this);
+                        });
+                        const results = lunrIndex.search(query);
+                        results.forEach(function (result) {
+                            responseResults.push({
+                                id: result.ref,
+                                score: result.score,
+                                data: documents.get(result.ref)
+                            });
+                        });
+                        response.isSuccessful = true;
+                    } catch (e) {
+                        response.isSuccessful = false;
+                        response.errorMessage = e.toString();
+                    }
+                    database.ref(tochaCollection).child(context.params.searchId)
+                        .update({
+                            response: response,
+                            responseTimestamp: admin.database.ServerValue.TIMESTAMP
+                        });
+                })
+        } catch (e) {
+            response.isSuccessful = false;
+            response.errorMessage = e.toString();
+            return database.ref(tochaCollection).child(context.params.searchId)
+                .update({
+                    response: response,
+                    responseTimestamp: admin.database.ServerValue.TIMESTAMP
                 });
-                const results = lunrIndex.search(query);
-                const response = [];
-                results.forEach(function (result) {
-                    response.push({
-                        id: result.ref,
-                        score: result.score,
-                        data: documents.get(result.ref)
-                    });
-                });
-                database.ref(tochaCollection).child(context.params.searchId)
-                    .update({
-                        response: response,
-                        responseTimestamp: admin.database.ServerValue.TIMESTAMP
-                    });
-            })
+        }
+
     });

@@ -118,16 +118,19 @@ So our document from Example 1 would become:
   "collectionName": "notes",
   "fields": ["title"],
   "query": "butter",
-  "response": [
-    {
-      "id": "note1",
-      "score": 0.856,
-      "data": {
-        "title": "Remember to buy butter",
-        "description": "Valeria asked me to get some butter at the supermarket on my way home."
+  "response": {
+    "result": [
+      {
+        "id": "note1",
+        "score": 0.856,
+        "data": {
+          "title": "Remember to buy butter",
+          "description": "Valeria asked me to get some butter at the supermarket on my way home."
+        }
       }
-    }
-  ]
+    ],
+    "isSuccessful": true
+  }
 }
 ```
 

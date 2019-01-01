@@ -12,64 +12,76 @@ const tochaCollection = 'tocha_searches';
 exports.searchFirestore = functions.firestore
     .document(tochaCollection + '/{searchId}')
     .onCreate(async (snap, context) => {
-        // Obtain the request parameters
-        const req = snap.data();
-        const collectionName = req.collectionName;
-        const fields = req.fields;
-        const query = req.query;
-        const queryRef = req.queryRef;
-        const where = req.where; // array containing all the extra queries
-        const orderBy = req.orderBy; // object containing field and direction
-        const limit = req.limit;
+        var responseResults = [];
+        var response = {
+            result: responseResults
+        };
+        try {
+            // Obtain the request parameters
+            const req = snap.data();
+            const collectionName = req.collectionName;
+            const fields = req.fields;
+            const query = req.query;
+            const queryRef = req.queryRef;
+            const where = req.where; // array containing all the extra queries
+            const orderBy = req.orderBy; // object containing field and direction
+            const limit = req.limit;
 
-        // Construct the query to the collection being searched
-        var userCollection = firestore.collection(collectionName);
-        if (where) {
-            where.forEach(function(subquery) {
-                userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
-            });
-        }
-        if (orderBy) {
-            orderBy.forEach(function (sortOrder) {
-                if (sortOrder.direction) {
-                    userCollection = userCollection.orderBy(sortOrder.field, sortOrder.direction);
+            // Construct the query to the collection being searched
+            var userCollection = firestore.collection(collectionName);
+            if (where) {
+                where.forEach(function(subquery) {
+                    userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
+                });
+            }
+            if (orderBy) {
+                orderBy.forEach(function (sortOrder) {
+                    if (sortOrder.direction) {
+                        userCollection = userCollection.orderBy(sortOrder.field, sortOrder.direction);
+                    } else {
+                        userCollection = userCollection.orderBy(sortOrder.field);
+                    }
+                });
+            }
+            if (limit) {
+                userCollection = userCollection.limit(limit);
+            }
+
+            // Read all the documents from the collection to be searched
+            const querySnapshot = await userCollection.get();
+            var documents = [];
+            var lunrIndex = lunr(function() {
+                if (queryRef) {
+                    this.ref(queryRef);
                 } else {
-                    userCollection = userCollection.orderBy(sortOrder.field);
+                    this.ref('key');
                 }
+                for (var i in fields) {
+                    this.field(fields[i]);
+                }
+                querySnapshot.forEach(function (docSnapshot) {
+                    var snapshotData = docSnapshot.data();
+                    documents[docSnapshot.id] = docSnapshot.data();
+                    snapshotData.key = docSnapshot.id;
+                    this.add(snapshotData);
+                }, this);
             });
-        }
-        if (limit) {
-            userCollection = userCollection.limit(limit);
+            const results = lunrIndex.search(query);
+            results.forEach(function(result) {
+                responseResults.push({
+                    id: result.ref,
+                    score: result.score,
+                    data: documents[result.ref]
+                })
+            });
+            response.isSuccessful = true;
+        } catch (e) {
+            console.log(e);
+            response.isSuccessful = false;
+            response.errorMessage = e.toString();
         }
 
-        // Read all the documents from the collection to be searched
-        const querySnapshot = await userCollection.get();
-        var documents = [];
-        var lunrIndex = lunr(function() {
-            if (queryRef) {
-                this.ref(queryRef);
-            } else {
-                this.ref('key');
-            }
-            for (var i in fields) {
-                this.field(fields[i]);
-            }
-            querySnapshot.forEach(function (docSnapshot) {
-                var snapshotData = docSnapshot.data();
-                documents[docSnapshot.id] = docSnapshot.data();
-                snapshotData.key = docSnapshot.id;
-                this.add(snapshotData);
-            }, this);
-        });
-        const results = lunrIndex.search(query);
-        var response = [];
-        results.forEach(function(result) {
-            response.push({
-                id: result.ref,
-                score: result.score,
-                data: documents[result.ref]
-            })
-        });
+
         return firestore.collection(tochaCollection).doc(context.params.searchId)
             .update({
                 response: response,

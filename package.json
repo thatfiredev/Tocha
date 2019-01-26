@@ -1,0 +1,20 @@
+{
+  "name": "tocha",
+  "version": "0.0.2",
+  "description": "Full-text Search for Firebase through Cloud Functions",
+  "homepage": "https://github.com/rosariopfernandes/Tocha",
+  "bugs": "https://github.com/rosariopfernandes/Tocha/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rosariopfernandes/Tocha.git"
+  },
+  "dependencies": {
+    "firebase-admin": "~6.4.0",
+    "firebase-functions": "^2.1.0",
+    "lunr": "^2.3.5"
+  },
+  "engines": {
+    "node": "8"
+  }
+}

@@ -1,26 +1,31 @@
 # Tocha
-Full-Text Search for Firebase through Cloud Functions, even if you're on the
- [Spark Plan](https://firebase.google.com/pricing/) (no billing enabled). 😉
+Full-Text Search for Firebase Projects using the [Spark (Free) plan](https://firebase.google.com/pricing/)
+ (no billing enabled).
+ 
+Use Tocha if you want to implement full-text search on:
+ - App Prototypes;
+ - Small Apps using the Firebase Spark Plan.
+ 
+If your app has scaled and you're using a plan with billing enabled (Flame or Blaze), then this library is not for you.
+ Instead, prefer using the
+ [solution recommended on the Firebase Documentation](https://firebase.google.com/docs/firestore/solutions/search).
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing
- purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
 To install and deploy Tocha, you'll need:
 - [Node.js](https://nodejs.org/en/download/), which comes with the Node Package Manager (npm);
 - The [Firebase CLI](https://github.com/firebase/firebase-tools) which can be installed using
- `npm install -g firebase-tools`. See full installation details
- [on the Documentation](https://firebase.google.com/docs/cli/).
+ `npm install -g firebase-tools`. See full installation details on 
+ [the Documentation](https://firebase.google.com/docs/cli/).
 
 ### Installing
 
 Tocha runs on Cloud Functions, so you'll need to install the Firebase CLI (as instructed on the
  [Prerequisites](#Prerequisites)) in order to setup Cloud Functions for your Firebase Project.
 
-_(If you already have Cloud Functions enabled for you project, you may skip to step 4.)_
+_(If you know how to deploy Cloud Functions to Firebase and have already done so, you may skip to step 4.)_
 
 1. Create a new directory on your local machine for the project and navigate into it:
     ```bash
@@ -32,7 +37,7 @@ _(If you already have Cloud Functions enabled for you project, you may skip to s
    ```bash
    firebase login
    ```
-   This will launch a web page for you to authenticate to your Firebase Account.
+   This will launch a web page for you to authenticate your Firebase Account.
     
 3. Initialize and configure your Firebase Project. In this step, you'll be asked what project you'll be using and what
  features you would like to setup (be sure to select `functions` at least).
@@ -41,23 +46,22 @@ _(If you already have Cloud Functions enabled for you project, you may skip to s
    ```
    If successful, this should create 2 files under your project directory: `package.json` and `index.js`.
    
-4. Open the `package.json` file on your favorite text editor and make sure you have set node version to 8 and added the
- following dependencies:
+4. Open the `package.json` file on your favorite text editor and make sure you have set node version to 8:
     ```json5
     {
-    // ... name, description, version, etc 
-    "dependencies": {
-      "firebase-admin": "~6.0.0",
-      "firebase-functions": "^2.1.0",
-      "tocha": ">=0.0.2"
-      },
-    "engines": {
-      "node": "8"
+      // ... name, description, dependencies, etc
+      "engines": {
+        "node": "8"
       }
     }
     ```
+    
+5. Install Tocha using:
+    ```bash
+    npm install tocha
+    ```
 
-5. Now open the `index.js` file on the text editor, import Tocha and export the functions you need:
+6. Open the `index.js` file on the text editor, import Tocha and create the functions you need:
     ```js
     const functions = require('firebase-functions');
     // ... you may have more imports here ...
@@ -72,16 +76,6 @@ _(If you already have Cloud Functions enabled for you project, you may skip to s
     // ... you may have more cloud functions here ...
     ```
     
-6. Finally, install all the npm dependencies using:
-    ```bash
-    npm install
-    ```
-    If this fails, you can try installing them manually:
-    ```bash
-        npm install firebase-admin
-        npm install firebase-functions
-        npm install tocha
-    ```
 
 ## Deployment
 

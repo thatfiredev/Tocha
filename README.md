@@ -6,12 +6,15 @@ Full-Text Search for Firebase Projects using the [Spark (Free) plan](https://fir
  (no billing enabled).
  
 Use Tocha if you want to implement full-text search on:
- - App Prototypes;
- - Small Apps using the Firebase Spark Plan.
+ - Android/iOS App Prototypes;
+ - Small Android/iOS Apps using the Firebase Spark Plan.
  
-If your app has scaled and you're using a plan with billing enabled (Flame or Blaze), then this library is not for you.
- Instead, prefer using the
+If your app has scaled and you're using a plan with billing enabled (Flame or Blaze), then this library is
+ **not for you**. Instead, prefer using the
  [solution recommended on the Firebase Documentation](https://firebase.google.com/docs/firestore/solutions/search).
+ 
+Using Tocha on web (JavaScript) applications is also **not recommended**, as it might be redundant. If you want to 
+ implement full-text search on your js app, consider using [Lunr.js](https://github.com/olivernn/lunr.js).
 
 ## Getting Started
 

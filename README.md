@@ -1,57 +1,86 @@
 # Tocha
-Full-Text Search for Firebase through Cloud Functions, even if you're on the
- [Spark Plan](https://firebase.google.com/pricing/) (no billing enabled). 😉
+Full-Text Search for Firebase Projects using the [Spark (Free) plan](https://firebase.google.com/pricing/)
+ (no billing enabled).
+ 
+Use Tocha if you want to implement full-text search on:
+ - App Prototypes;
+ - Small Apps using the Firebase Spark Plan.
+ 
+If your app has scaled and you're using a plan with billing enabled (Flame or Blaze), then this library is not for you.
+ Instead, prefer using the
+ [solution recommended on the Firebase Documentation](https://firebase.google.com/docs/firestore/solutions/search).
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing
- purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-To install Tocha, you'll need:
+To install and deploy Tocha, you'll need:
 - [Node.js](https://nodejs.org/en/download/), which comes with the Node Package Manager (npm);
 - The [Firebase CLI](https://github.com/firebase/firebase-tools) which can be installed using
- `npm install -g firebase-tools`. See full installation details
- [on the Documentation](https://firebase.google.com/docs/cli/).
+ `npm install -g firebase-tools`. See full installation details on 
+ [the Documentation](https://firebase.google.com/docs/cli/).
 
 ### Installing
 
-#### If you've never setup a Cloud Function for your Firebase Project
+Tocha runs on Cloud Functions, so you'll need to install the Firebase CLI (as instructed on the
+ [Prerequisites](#Prerequisites)) in order to setup Cloud Functions for your Firebase Project.
 
-1. [Download](https://github.com/rosariopfernandes/Tocha/archive/master.zip) the contents of the repository or clone it
- using git and navigate to it:
-   ```bash
-   # Clone the Project
-   git clone https://github.com/rosariopfernandes/Tocha.git
-   
-   # Navigate to the directory
-   cd Tocha
-   
-   ```
+_(If you know how to deploy Cloud Functions to Firebase and have already done so, you may skip to step 4.)_
+
+1. Create a new directory on your local machine for the project and navigate into it:
+    ```bash
+    mkdir my_tocha_project
+    cd my_tocha_project
+    ```
 
 2. If you haven't already, login to Firebase:
    ```bash
    firebase login
    ```
-   This will launch a webpage for you to authenticate to your Firebase Account.
+   This will launch a web page for you to authenticate your Firebase Account.
     
-3. Initialize and configure your Firebase Project. In this step, you'll be asked what features you want to setup
- (be sure to select `functions` at least) and what project will you be using.
+3. Initialize and configure your Firebase Project. In this step, you'll be asked what project you'll be using and what
+ features you would like to setup (be sure to select `functions` at least).
    ```bash
    firebase init
    ```
-   **DON'T** overwrite the existing package.json and index.js files.
+   If successful, this should create 2 files under your project directory: `package.json` and `index.js`.
+   
+4. Open the `package.json` file on your favorite text editor and make sure you have set node version to 8:
+    ```json5
+    {
+      // ... name, description, dependencies, etc
+      "engines": {
+        "node": "8"
+      }
+    }
+    ```
+    
+5. Install Tocha using:
+    ```bash
+    npm install tocha
+    ```
 
-#### If you already have some Cloud Functions on your Firebase Project
-Then you're probably already familiarized with Cloud Functions. Simply open the [index.js file](functions/index.js)
- and copy the function you need to add to your project. You might need to also add the imports
- (first lines of that file).
+6. Open the `index.js` file on the text editor, import Tocha and create the functions you need:
+    ```js
+    const functions = require('firebase-functions');
+    // ... you may have more imports here ...
+    const tocha = require('tocha');
+    
+    // Add this line to enable Full-Text Search for Cloud Firestore
+    exports.searchFirestore = tocha.searchFirestore;
+    
+    // Add this line to enable Full-Text Search for the Realtime Database
+    exports.searchRTDB = tocha.searchRTDB;
+ 
+    // ... you may have more cloud functions here ...
+    ```
+    
 
 ## Deployment
 
 To deploy your functions to Firebase, you can either:
-- deploy the cloud functions and security rules
+- deploy the cloud functions and all the other tools you have enabled for that project:
 ```bash
 firebase deploy
 ```
@@ -118,16 +147,19 @@ So our document from Example 1 would become:
   "collectionName": "notes",
   "fields": ["title"],
   "query": "butter",
-  "response": [
-    {
-      "id": "note1",
-      "score": 0.856,
-      "data": {
-        "title": "Remember to buy butter",
-        "description": "Valeria asked me to get some butter at the supermarket on my way home."
+  "response": {
+    "result": [
+      {
+        "id": "note1",
+        "score": 0.856,
+        "data": {
+          "title": "Remember to buy butter",
+          "description": "Valeria asked me to get some butter at the supermarket on my way home."
+        }
       }
-    }
-  ]
+    ],
+    "isSuccessful": true
+  }
 }
 ```
 

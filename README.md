@@ -188,6 +188,39 @@ The `limit` field allows you to limit the number of documents retrieved. This va
 }
 ```
 
+### Advanced Search on The Realtime Database
+If you need to sort/filter your data before performing a search, you can add these optional parameters to your query:
+
+#### orderChild, orderValue, orderKey
+Those are equivalent to `orderByChild()`, `orderByValue()` and `orderByKey()`. You can find more about it on the
+ [documentation](https://firebase.google.com/docs/database/web/lists-of-data#sort_data).
+ 
+**Example usage:**
+```json5
+{
+  // ... Other Fields (collectionName, fields, query, etc)
+  "orderValue": true,
+  "orderKey": true,
+  "orderChild": "birthday" // ordering by the birthday child
+}
+```
+
+Please note that you can only use **one** order-by method at a time. Calling an order-by method multiple times in the
+ same query throws an error.
+ 
+#### limitFirst, limitLast, startAtBound, endAtBound, equalToBound
+Equivalent to `limitToFirst()`, `limitToLast()`, `startAt()`, `endAt()` and `equalTo()`. See the
+ [documentation](https://firebase.google.com/docs/database/web/lists-of-data#filtering_data) for more details.
+ 
+**Example usage:**
+```json5
+{
+  // ... Other Fields (collectionName, fields, query, etc)
+  "limitFirst": 10,
+  "startAtBound": 5,
+  "equalToBound": "john.doe@tocha.com"
+}
+```
 
 ## Contributing
 

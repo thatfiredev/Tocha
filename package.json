@@ -1,6 +1,6 @@
 {
   "name": "tocha",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Full-text Search for Firebase through Cloud Functions",
   "homepage": "https://github.com/rosariopfernandes/Tocha",
   "bugs": "https://github.com/rosariopfernandes/Tocha/issues",

@@ -1,4 +1,7 @@
+[![Build Status](https://travis-ci.org/rosariopfernandes/Tocha.svg?branch=master)](https://travis-ci.org/rosariopfernandes/Tocha)
+
 # Tocha
+
 Full-Text Search for Firebase Projects using the [Spark (Free) plan](https://firebase.google.com/pricing/)
  (no billing enabled).
  

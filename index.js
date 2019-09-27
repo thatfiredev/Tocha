@@ -31,18 +31,18 @@ exports.searchFirestore = functions.firestore
             var userCollection = firestore.collection(collectionName);
             if (where) {
                 where.forEach(function(subquery) {
-                    if (subquery.val) {
+                    if (subquery.val && subquery.field && subquery.operator) {
                         userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
-                    } else if (subquery.value) {
+                    } else if (subquery.value && subquery.field && subquery.operator) {
                         userCollection = userCollection.where(subquery.field, subquery.operator, subquery.value);
                     }
                 });
             }
             if (orderBy) {
                 orderBy.forEach(function (sortOrder) {
-                    if (sortOrder.direction) {
+                    if (sortOrder.direction && sortOrder.field) {
                         userCollection = userCollection.orderBy(sortOrder.field, sortOrder.direction);
-                    } else {
+                    } else if (sortOrder.field) {
                         userCollection = userCollection.orderBy(sortOrder.field);
                     }
                 });

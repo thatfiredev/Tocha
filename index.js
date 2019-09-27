@@ -31,7 +31,10 @@ exports.searchFirestore = functions.firestore
             var userCollection = firestore.collection(collectionName);
             if (where) {
                 where.forEach(function(subquery) {
-                    userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
+                    if (subquery.val)
+                        userCollection = userCollection.where(subquery.field, subquery.operator, subquery.val);
+                    else
+                        userCollection = userCollection.where(subquery.field, subquery.operator, subquery.value);
                 });
             }
             if (orderBy) {

@@ -65,7 +65,7 @@ exports.searchFirestore = functions.firestore
                 }
                 querySnapshot.forEach(function (docSnapshot) {
                     var snapshotData = docSnapshot.data();
-                    documents[docSnapshot.id] = docSnapshot.data();
+                    documents[docSnapshot.id] = snapshotData;
                     snapshotData.key = docSnapshot.id;
                     this.add(snapshotData);
                 }, this);

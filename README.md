@@ -177,7 +177,8 @@ Although running a text-search in the whole collection is great, sometimes you m
 An array of map values where you can perform simple or compound queries for firestore. Each map in this array must
  contain the following fields:
  - `field` - the field to filter on.
- - `operator` - a comparison operator. This can be `<`, `<=`, `==`, `>`, `>=`, or `array_contains`.
+ - `operator` - a comparison operator (can be `<`, `<=`, `==`, `>`, or `>=`) or an array membership operator
+  (`array-contains`, `in`, or `array-contains-any`).
  - `val` - the value.
  
 **Example:** Suppose our notes had one more field named `ownerUID`, which tells us which user created the note.

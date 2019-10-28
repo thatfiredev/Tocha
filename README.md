@@ -113,14 +113,14 @@ Let's say we have a Firestore Collection named "notes" with the following Docume
 ### Performing a Simple Search
 In order to search the collection, you'll need to create a new collection named "tocha_searches" and add a new document
  to it. This document should contain the following fields:
- - `collectionName` - the name of the collection to be searched;
+ - `collectionName` - the name of the collection to be searched; (_Note that you are free to pass a subcollection path_)
  - `fields` - array of fields to search on.
  - `query` - the word/expression you're looking for.
 
 **Example 1:** Let's run an exact search for notes with the word "butter". Our document would look like this:
 ```json
 {
-  "collectionName": "notes",
+  "collectionName": "notes", // OR "users/UID/notes"
   "fields": ["title"],
   "query": "butter"
 }
@@ -129,7 +129,7 @@ In order to search the collection, you'll need to create a new collection named 
 **Example 2:** Sometimes you may need an inexact search. Let's look for the note about Eta's birthday:
 ```json
 {
-  "collectionName": "notes",
+  "collectionName": "notes", // OR "users/UID/notes"
   "fields": ["title", "description"],
   "query": "Eta*"
 }
@@ -150,7 +150,7 @@ Adding that document to the collection should trigger our Cloud Function which a
 So our document from Example 1 would become:
 ```json
 {
-  "collectionName": "notes",
+  "collectionName": "notes",  // OR "users/UID/notes"
   "fields": ["title"],
   "query": "butter",
   "response": {

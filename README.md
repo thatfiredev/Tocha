@@ -178,7 +178,7 @@ An array of map values where you can perform simple or compound queries for fire
  contain the following fields:
  - `field` - the field to filter on.
  - `operator` - a query operator (can be `<`, `<=`, `==`, `>`, `>=`, `array-contains`, `in`, or `array-contains-any`).
- - `val` - the value.
+ - `val` or `value` - the value to filter on.
  
 **Example:** Suppose our notes had one more field named `ownerUID`, which tells us which user created the note.
 
@@ -190,7 +190,7 @@ We might want to query only on the notes created by a specific user (`uid: rando
     {
       "field": "ownerUID",
       "operator": "==",
-      "val": "randomUserUID"
+      "value": "randomUserUID"
     }
     // Optionally, you can add more filter maps here.
   ]

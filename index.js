@@ -26,6 +26,7 @@ exports.searchFirestore = functions.firestore
             const where = req.where; // array containing all the extra queries
             const orderBy = req.orderBy; // object containing field and direction
             const limit = req.limit;
+            const limitToLast = req.limitToLast;
 
             // Construct the query to the collection being searched
             var userCollection = firestore.collection(collectionName);
@@ -49,6 +50,8 @@ exports.searchFirestore = functions.firestore
             }
             if (limit) {
                 userCollection = userCollection.limit(limit);
+            } else if (limitToLast) {
+                userCollection = userCollection.limitToLast(limitToLast);
             }
 
             // Read all the documents from the collection to be searched

@@ -12,8 +12,8 @@ const tochaCollection = 'tocha_searches';
 exports.searchFirestore = functions.firestore
     .document(tochaCollection + '/{searchId}')
     .onCreate(async (snap, context) => {
-        var responseResults = [];
-        var response = {
+        let responseResults = [];
+        let response = {
             result: responseResults
         };
         try {
@@ -28,7 +28,7 @@ exports.searchFirestore = functions.firestore
             const limit = req.limit;
 
             // Construct the query to the collection being searched
-            var userCollection = firestore.collection(collectionName);
+            let userCollection = firestore.collection(collectionName);
             if (where) {
                 where.forEach(function(subquery) {
                     if (subquery.val && subquery.field && subquery.operator) {
@@ -53,18 +53,18 @@ exports.searchFirestore = functions.firestore
 
             // Read all the documents from the collection to be searched
             const querySnapshot = await userCollection.get();
-            var documents = [];
-            var lunrIndex = lunr(function() {
+            let documents = [];
+            let lunrIndex = lunr(function() {
                 if (queryRef) {
                     this.ref(queryRef);
                 } else {
                     this.ref('key');
                 }
-                for (var i in fields) {
+                for (let i in fields) {
                     this.field(fields[i]);
                 }
                 querySnapshot.forEach(function (docSnapshot) {
-                    var snapshotData = docSnapshot.data();
+                    let snapshotData = docSnapshot.data();
                     documents[docSnapshot.id] = docSnapshot.data();
                     snapshotData.key = docSnapshot.id;
                     this.add(snapshotData);
@@ -98,7 +98,7 @@ exports.searchRTDB = functions.database
     .ref(tochaCollection + '/{searchId}')
     .onCreate((snap, context) => {
         const responseResults = [];
-        var response = {
+        let response = {
             result: responseResults
         };
         const database = admin.database();
@@ -114,16 +114,16 @@ exports.searchRTDB = functions.database
             return database.ref(nodeName)
                 .once('value', function(dataSnapshot) {
                     try {
-                        var documents = new Map();
+                        let documents = new Map();
                         dataSnapshot.forEach(function (snapshot) {
-                            var snapshotVal = snapshot.val();
+                            let snapshotVal = snapshot.val();
                             snapshotVal.key = snapshot.key;
                             documents.set(snapshot.key, snapshotVal);
                         });
-                        var lunrIndex = lunr(function () {
+                        let lunrIndex = lunr(function () {
                             if (queryRef) { this.ref(queryRef); } else { this.ref('key'); }
 
-                            for (var i in fields) { this.field(fields[i]); }
+                            for (let i in fields) { this.field(fields[i]); }
 
                             documents.forEach(function (value) { this.add(value); }, this);
                         });

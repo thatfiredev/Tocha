@@ -10,8 +10,8 @@
     "url": "https://github.com/rosariopfernandes/Tocha.git"
   },
   "dependencies": {
-    "firebase-admin": "~6.4.0",
-    "firebase-functions": "^2.1.0",
+    "firebase-admin": "~8.10.0",
+    "firebase-functions": "^3.6.0",
     "lunr": "^2.3.5"
   },
   "scripts": {

@@ -200,7 +200,7 @@ We might want to query only on the notes created by a specific user (`uid: rando
 See a full list of valid filters and query limitations on the
  [Firebase Documentation](https://firebase.google.com/docs/firestore/query-data/queries).
 
-#### `orderBy` and `limit`
+#### `orderBy`, `limit` and `limitToLast`
 The `orderBy` field allows you to order the result of your query. This field is an array of map objects with 2 fields:
  - `field` - the field to sort on.
  - `direction` (optional) - `asc` for ascending order or `desc` for descending. If you omit this field, it will use
@@ -209,7 +209,8 @@ The `orderBy` field allows you to order the result of your query. This field is 
 **Note:** If you want to order by multiple fields you might need to
  [Create an Index on Firestore](https://firebase.google.com/docs/firestore/query-data/indexing).
  
-The `limit` field allows you to limit the number of documents retrieved. This value of this field must be a number.
+The `limit` field allows you to get only the first `n` documents retrieved, where `n` is the positive number
+ you pass as value of the field.
 
 **Example:** Let's order our notes by `title` and get the first 5:
 ```json5
@@ -225,6 +226,11 @@ The `limit` field allows you to limit the number of documents retrieved. This va
   "limit": 5
 }
 ```
+
+The `limitToLast` field allows you to get only the last `n` documents retrieved, where `n` is the positive number
+ you pass as value of the field.
+ 
+Please **note** that you need at least one `orderBy` field to use `limitToLast`, otherwise it will return an exception.
 
 ### Advanced Search on The Realtime Database
 If you need to sort/filter your data before performing a search, you can add these optional parameters to your query:
